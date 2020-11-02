@@ -63,7 +63,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <ul>
+                                <li v-for="ocorrido in acontecimentos">{{ocorrido}}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -78,8 +82,10 @@
                 this.isVivo=true;
             }
 
-            atacar() {
-                return this.randomNumber(1, this.forca);
+            atacar(alvo, log) {
+                let dano = this.randomNumber(1, this.forca);
+                alvo.recebeDano(dano);
+                log.unshift(this.nome+' atingiu '+alvo.nome+' com '+dano)
             }
 
             recebeDano(dano) {
@@ -99,7 +105,8 @@
             data: {
                 lutadores:[],
                 isJogoIniciado:false,
-                vencedor:''
+                vencedor:'',
+                acontecimentos:[]
             },
             methods: {
                 iniciaJogo() {
@@ -118,8 +125,8 @@
                     this.isJogoIniciado=false;
                 },
                 atacar() {
-                    this.lutadores[1].recebeDano(this.lutadores[0].atacar());
-                    this.lutadores[0].recebeDano(this.lutadores[1].atacar());
+                    this.lutadores[0].atacar(this.lutadores[1], this.acontecimentos);
+                    this.lutadores[1].atacar(this.lutadores[0], this.acontecimentos);
                     let vue = this;
                     let vencedor = this.lutadores[1];
                     this.lutadores.forEach(function(lutador, i){
@@ -132,8 +139,7 @@
                         }
                     });
                 },
-
-        }
+            }
         });
     </script>
 </html>
