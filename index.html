@@ -11,6 +11,15 @@
             .card {
                 margin-top:15px;
             }
+            .logs {
+                list-style: none;
+                padding: 0;
+            }
+            .logs li {
+                text-align: center;
+                padding: 10px 5px;
+                margin-bottom: 5px;
+            }
         </style>
     </head>
     <body>
@@ -64,8 +73,8 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <ul>
-                                <li v-for="ocorrido in acontecimentos">{{ocorrido}}</li>
+                            <ul class="logs">
+                                <li v-for="ocorrido in acontecimentos" :class="ocorrido.tipo">{{ocorrido.log}}</li>
                             </ul>
                         </div>
                     </div>
@@ -74,6 +83,12 @@
         </div>
     </body>
     <script>
+        class ocorrido {
+            constructor(tipo, log) {
+                this.tipo = tipo;
+                this.log = log;
+            }
+        }
         class lutador {
             constructor(nome, vida, forca) {
                 this.nome = nome;
@@ -82,10 +97,10 @@
                 this.isVivo=true;
             }
 
-            atacar(alvo, log) {
+            atacar(alvo, log, ocorridoTipo='bg-primary') {
                 let dano = this.randomNumber(1, this.forca);
                 alvo.recebeDano(dano);
-                log.unshift(this.nome+' atingiu '+alvo.nome+' com '+dano)
+                log.unshift(new ocorrido(ocorridoTipo, this.nome+' atingiu '+alvo.nome+' com '+dano));
             }
 
             curar(log) {
@@ -94,7 +109,7 @@
                 if (this.vida > 100) {
                     this.vida = 100;
                 }
-                log.unshift(this.nome+' recuperou '+recuperacao+' de sua vida');
+                log.unshift(new ocorrido('bg-success', this.nome+' recuperou '+recuperacao+' de sua vida'));
             }
 
             recebeDano(dano) {
@@ -149,7 +164,7 @@
                     this.encerraTurno();
                 },
                 encerraTurno() {
-                    this.lutadores[1].atacar(this.lutadores[0], this.acontecimentos);
+                    this.lutadores[1].atacar(this.lutadores[0], this.acontecimentos, 'bg-danger');
                     let vue = this;
                     let vencedor = this.lutadores[1];
                     this.lutadores.forEach(function(lutador, i){
