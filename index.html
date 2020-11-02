@@ -25,11 +25,11 @@
     <body>
         <div id="app" class="container">
             <div class="row">
-                <div class="col-12">
+                <div class="col-6" v-for="lutador in lutadores">
                     <div class="card">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-6 text-center" v-for="lutador in lutadores">
+
+                                <div class="text-center">
                                     <h2>{{lutador.nome}}</h2>
                                     <p>
                                         <div class="progress">
@@ -38,7 +38,7 @@
                                         {{lutador.vida}}%
                                     </p>
                                 </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
