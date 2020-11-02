@@ -24,7 +24,7 @@
                                     <h2>{{lutador.nome}}</h2>
                                     <p>
                                         <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" :style="{width:lutador.vida+'%'}" aria-valuemax="100"></div>
+                                            <div class="progress-bar bg-success" :class="{'bg-danger': (lutador.vida < 30)}" role="progressbar" :style="{width:lutador.vida+'%'}" aria-valuemax="100"></div>
                                         </div>
                                         {{lutador.vida}}%
                                     </p>
@@ -112,24 +112,24 @@
         new Vue({
             el:'#app',
             data: {
-                lutadores:[],
+                lutadores : [
+                    new lutador('Jogador', 100, 15),
+                    new lutador('Monstro', 100, 20)
+                ],
                 isJogoIniciado:false,
                 vencedor:'',
                 acontecimentos:[]
             },
             methods: {
                 iniciaJogo() {
+                    this.lutadores.forEach(function(lutador){
+                        lutador.vida = 100;
+                    });
                     this.acontecimentos = [];
-                    this.lutadores = [
-                        new lutador('Jogador', 100, 15),
-                        new lutador('Monstro', 100, 20)
-                    ];
                     this.isJogoIniciado=true;
                 },
                 finalizaJogo(vencedor) {
-                    if (!(vencedor instanceof lutador)) {
-                        this.lutadores = [];
-                    } else {
+                    if (vencedor instanceof lutador) {
                         this.vencedor = vencedor;
                     }
                     this.isJogoIniciado=false;
