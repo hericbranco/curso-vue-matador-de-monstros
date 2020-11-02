@@ -41,6 +41,9 @@
                         <div class="card-body">
                                 <div class="row">
                                     <div class="col-12 text-center">
+                                        <h3 v-if="vencedor">
+                                            {{vencedor.nome}} Ganhou a Batalha!!
+                                        </h3>
                                         <template v-if="!isJogoIniciado">
                                             <button @click="iniciaJogo" class="btn btn-primary">Iniciar Novo Jogo</button>
                                         </template>
@@ -48,7 +51,7 @@
                                             <button @click="atacar" class="btn btn-danger">ataque</button>
                                             <button class="btn btn-warning">ataque especial</button>
                                             <button class="btn btn-success">curar</button>
-                                            <button @click="desistir" class="btn btn-secondary">desistir</button>
+                                            <button @click="finalizaJogo" class="btn btn-secondary">desistir</button>
                                         </template>
                                     </div>
                                 </div>
@@ -68,33 +71,69 @@
     </body>
     <script>
         class lutador {
-            constructor(nome, vida) {
+            constructor(nome, vida, forca) {
                 this.nome = nome;
                 this.vida = vida;
+                this.forca = forca;
+                this.isVivo=true;
+            }
+
+            atacar() {
+                return this.randomNumber(1, this.forca);
+            }
+
+            recebeDano(dano) {
+                this.vida = this.vida-dano;
+                if (this.vida <= 0) {
+                    this.isVivo=false;
+                    this.vida = 0;
+                }
+            }
+
+            randomNumber(min, max) {
+                return parseInt(Math.random() * (max - min) + min);
             }
         }
         new Vue({
             el:'#app',
             data: {
                 lutadores:[],
-                isJogoIniciado:false
+                isJogoIniciado:false,
+                vencedor:''
             },
             methods: {
                 iniciaJogo() {
                     this.lutadores = [
-                        new lutador('Jogador', 100),
-                        new lutador('Monstro', 100)
+                        new lutador('Jogador', 100, 15),
+                        new lutador('Monstro', 100, 20)
                     ];
                     this.isJogoIniciado=true;
                 },
-                desistir() {
-                    this.lutadores = [];
+                finalizaJogo(vencedor) {
+                    if (!(vencedor instanceof lutador)) {
+                        this.lutadores = [];
+                    } else {
+                        this.vencedor = vencedor;
+                    }
                     this.isJogoIniciado=false;
                 },
                 atacar() {
-                    console.log('dsa');
-                }
-            }
+                    this.lutadores[1].recebeDano(this.lutadores[0].atacar());
+                    this.lutadores[0].recebeDano(this.lutadores[1].atacar());
+                    let vue = this;
+                    let vencedor = this.lutadores[1];
+                    this.lutadores.forEach(function(lutador, i){
+                        if (!lutador.isVivo) {
+                            if (i == 1) {
+                                vencedor = vue.lutadores[0];
+                            }
+                            vue.finalizaJogo(vencedor);
+                            return false;
+                        }
+                    });
+                },
+
+        }
         });
     </script>
 </html>
