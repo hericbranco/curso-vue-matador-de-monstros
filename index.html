@@ -49,8 +49,8 @@
                                         </template>
                                         <template v-else>
                                             <button @click="atacar" class="btn btn-danger">ataque</button>
-                                            <button class="btn btn-warning">ataque especial</button>
-                                            <button class="btn btn-success">curar</button>
+                                            <button @click="atacarComEspecial" class="btn btn-warning">ataque especial</button>
+                                            <button @click="curar" class="btn btn-success">curar</button>
                                             <button @click="finalizaJogo" class="btn btn-secondary">desistir</button>
                                         </template>
                                     </div>
@@ -88,6 +88,15 @@
                 log.unshift(this.nome+' atingiu '+alvo.nome+' com '+dano)
             }
 
+            curar(log) {
+                let recuperacao = this.randomNumber(1, this.forca);
+                this.vida = this.vida+recuperacao;
+                if (this.vida > 100) {
+                    this.vida = 100;
+                }
+                log.unshift(this.nome+' recuperou '+recuperacao+' de sua vida');
+            }
+
             recebeDano(dano) {
                 this.vida = this.vida-dano;
                 if (this.vida <= 0) {
@@ -110,6 +119,7 @@
             },
             methods: {
                 iniciaJogo() {
+                    this.acontecimentos = [];
                     this.lutadores = [
                         new lutador('Jogador', 100, 15),
                         new lutador('Monstro', 100, 20)
@@ -124,8 +134,21 @@
                     }
                     this.isJogoIniciado=false;
                 },
+                curar() {
+                    this.lutadores[0].curar(this.acontecimentos);
+                    this.encerraTurno();
+                },
+                atacarComEspecial() {
+                    let forcaOriginal = this.lutadores[0].forca;
+                    this.lutadores[0].forca = forcaOriginal*1.5;
+                    this.atacar();
+                    this.lutadores[0].forca = forcaOriginal;
+                },
                 atacar() {
                     this.lutadores[0].atacar(this.lutadores[1], this.acontecimentos);
+                    this.encerraTurno();
+                },
+                encerraTurno() {
                     this.lutadores[1].atacar(this.lutadores[0], this.acontecimentos);
                     let vue = this;
                     let vencedor = this.lutadores[1];
@@ -138,7 +161,7 @@
                             return false;
                         }
                     });
-                },
+                }
             }
         });
     </script>
